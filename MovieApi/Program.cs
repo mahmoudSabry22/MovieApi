@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using MovieApi.Model;
+using MovieApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +18,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddCors();
 //to enable cors ....continuo add cros in midllware >>>down
 
+//builder.Services.AddTransient<IGenreService, GenreService>();
+builder.Services.AddScoped<IGenreService, GenreService>();
 
 builder.Services.AddSwaggerGen(options =>
 {
