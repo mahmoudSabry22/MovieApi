@@ -20,6 +20,7 @@ builder.Services.AddCors();
 
 //builder.Services.AddTransient<IGenreService, GenreService>();
 builder.Services.AddScoped<IGenreService, GenreService>();
+builder.Services.AddScoped<IMoviesService, MoviesService>();
 
 builder.Services.AddSwaggerGen(options =>
 {

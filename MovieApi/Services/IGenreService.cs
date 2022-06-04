@@ -11,5 +11,7 @@ namespace MovieApi.Services
         Task<Genre> Add(Genre genre);
         Genre Update(Genre genre);
         Genre Delete(Genre genre);
+
+        Task<bool> isValid(byte id);
     }
 }
