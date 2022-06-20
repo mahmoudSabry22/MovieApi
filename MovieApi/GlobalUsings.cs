@@ -1,2 +1,4 @@
 ﻿global using System.ComponentModel.DataAnnotations;
-using MovieApi.Dtos;
+global using MovieApi.Dtos;
+
+global using MovieApi.Model;

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MovieApi.Dtos;
@@ -11,23 +12,27 @@ namespace MovieApi.Controllers
     [ApiController]
     public class MoviesController : ControllerBase
     {
+        private readonly IMapper _mapper;
         private readonly IMoviesService _moviesService;
         private readonly IGenreService _genreService;
 
         private new List<string> _allowedExtenstions = new List<string> { ".jpg", ".png" };
         private long _maxAllowedPosterSize = 1048576;
 
-        public MoviesController(IMoviesService moviesService, IGenreService genreService)
+        public MoviesController(IMoviesService moviesService, IGenreService genreService, IMapper mapper)
         {
 
             _moviesService = moviesService;
             _genreService = genreService;
+            _mapper = mapper;
         }
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         {
-            var TheMovies =await _moviesService.GetAll();
-            return Ok(TheMovies);
+            var movie =await _moviesService.GetAll();
+
+            var data = _mapper.Map<IEnumerable<MovieDetailsDto>>(movie);
+            return Ok(data);
         }
 
         [HttpGet("{id}")]
@@ -38,8 +43,10 @@ namespace MovieApi.Controllers
             if(movie == null)
                 return NotFound();
 
-            var dto = new MovieDetailsDto
-            {
+            var dto =_mapper.Map<MovieDetailsDto>(movie);
+                //new MovieDetailsDto
+
+            /*{
                 Id = movie.Id,
                 Title = movie.Title,
                 Rate = movie.Rate,
@@ -48,15 +55,17 @@ namespace MovieApi.Controllers
                 Poster = movie.Poster,
                 GenreId = movie.GenreId,
                 GenreName = movie.Genres.Name
-            };
+            };*/
+
             return  Ok(dto);
         }
 
         [HttpGet("GetByGenreId")]
         public async Task<IActionResult> GetByGenreIdAsync(byte genreId)
         {
-            var TheMovies = await _moviesService.GetAll(genreId);
-            return Ok(TheMovies);
+            var movie = await _moviesService.GetAll(genreId);
+            var data = _mapper.Map<IEnumerable<MovieDetailsDto>>(movie);
+            return Ok(data);
         }
         
         [HttpPost]
@@ -81,15 +90,8 @@ namespace MovieApi.Controllers
             await dto.Poster.CopyToAsync(dateStrem);
 
 
-            var movie = new Movie
-            {
-                GenreId = dto.GenreId,
-                Title = dto.Title,
-                Year = dto.Year,
-                Storeline = dto.Storeline,
-                Rate = dto.Rate,
-                Poster = dateStrem.ToArray(),
-            };
+            var movie = _mapper.Map<Movie>(dto);
+            movie.Poster = dateStrem.ToArray();//to add poster make edit in mappingProfile file (use forRemember)
 
            await  _moviesService.Add(movie);
 
@@ -122,6 +124,7 @@ namespace MovieApi.Controllers
                 movie.Poster = dateStrem.ToArray();
             }
 
+           
             movie.Title = dto.Title;
             movie.Year = dto.Year;
             movie.Storeline = dto.Storeline;

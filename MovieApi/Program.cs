@@ -22,6 +22,9 @@ builder.Services.AddCors();
 builder.Services.AddScoped<IGenreService, GenreService>();
 builder.Services.AddScoped<IMoviesService, MoviesService>();
 
+//AutoMapper 
+builder.Services.AddAutoMapper(typeof(Program));
+
 builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new OpenApiInfo 
